@@ -1,0 +1,11 @@
+.scroll-reveal-text {
+    /* Allow inheritance or override via Tailwind */
+    display: inline-block;
+    /* Ensure block wrapping */
+}
+
+.word {
+    display: inline-block;
+    white-space: pre;
+    /* Ensure spaces are preserved */
+}
