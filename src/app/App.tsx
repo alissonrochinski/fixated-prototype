@@ -34,6 +34,12 @@ const WHEEL_THRESHOLD = 40;   // delta mínimo para disparar (filtra ruído do t
 const TOUCH_THRESHOLD = 30;  // swipe mínimo em px para mobile
 const PARALLAX_FACTOR = 0.5; // vídeo se move a 50% da velocidade do scroll
 
+const getYoutubeId = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
 const HERO_IMG = "https://images.unsplash.com/photo-1662695089339-a2c24231a3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjb250ZW50JTIwY3JlYXRvcnMlMjBzZWxmaWV8ZW58MXx8fHwxNzcwODE5NDMyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const CARD1_IMG = "https://images.unsplash.com/photo-1760561993749-1b5034aa9a09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx0YWxlbnQlMjBtYW5hZ2VtZW50JTIwY3JlYXRvcnxlbnwxfHx8fDE3NzA4MTk0MzJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const SCISSORS_ICON = "https://www.figma.com/design/PTXbpayc6onVUhyZDN0iZG/Playground?node-id=448-9654&t=OtC6T9IxOgtUNPoY-4"; // This is a placeholder for the SVG integration Headeropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxjb250ZW50JTIwc3R1ZGlvJTIwcHJvZHVjdGlvbnxlbnwxfHx8fDE3NzA4MTk0MzN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
@@ -195,13 +201,6 @@ function HeroOverlay({ ready, leaving }: { ready?: boolean; leaving?: boolean })
 
 const SectionHero = memo(({ ready, leaving, heroVideo = '/_media/hero.mp4' }: { ready?: boolean; leaving?: boolean; heroVideo?: string }) => {
   const isYoutube = heroVideo.includes("youtube.com") || heroVideo.includes("youtu.be");
-
-  const getYoutubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
-
   const youtubeId = isYoutube ? getYoutubeId(heroVideo) : null;
 
   return (
@@ -362,6 +361,9 @@ function ServiceCard({
     }
   }, []);
 
+  const isYoutube = video?.includes("youtube.com") || video?.includes("youtu.be");
+  const youtubeId = isYoutube && video ? getYoutubeId(video) : null;
+
   return (
     <div style={{ flex: 1, overflow: 'hidden' }}>
       <motion.div
@@ -391,7 +393,24 @@ function ServiceCard({
         <div
           className="absolute inset-0 scale-[1.4] group-hover:scale-[1.48] transition-transform duration-[400ms] ease-out"
         >
-          {video ? (
+          {isYoutube && youtubeId ? (
+            <div className="absolute inset-0 w-full h-full scale-[1.35] pointer-events-none select-none">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeId}&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&fs=0`}
+                title={title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full object-cover pointer-events-none"
+                style={{ pointerEvents: 'none' }}
+              ></iframe>
+              {/* Overlay to prevent interaction */}
+              <div className="absolute inset-0 z-10 bg-transparent"></div>
+            </div>
+          ) : video ? (
             <video
               ref={videoRef}
               autoPlay
@@ -444,7 +463,7 @@ function SectionServicesContent({ visible }: { visible?: boolean }) {
           <div className="grid grid-cols-2 gap-[8px] max-w-[1280px] w-full">
             <ServiceCard
               title="CONTENT STUDIO"
-              video="/_media/card_videos/video_a.mp4"
+              video="https://youtu.be/sx_CI-jdO4Y"
               poster={cardThumb}
               description="Professional production for high-impact visual storytelling across all platforms, ensuring your message lands with precision."
               visible={visible}
@@ -453,7 +472,7 @@ function SectionServicesContent({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="CONTENT STRATEGY"
-              video="/_media/card_videos/video_b.mp4"
+              video="https://youtu.be/YKz85Fp1NHg"
               poster={cardThumb} // Using the same thumb as placeholder if video_b poster is missing
               description="Data-driven insights and creative frameworks to optimize your content ecosystem for maximum engagement and retention."
               visible={visible}
@@ -462,7 +481,7 @@ function SectionServicesContent({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="SYNDICATION"
-              video="/_media/card_videos/video_c.mp4"
+              video="https://youtu.be/cn4kRq2TMDI"
               poster={cardThumb}
               description="Cross-platform distribution logic to maximize reach and engagement for every piece of content you produce."
               visible={visible}
@@ -471,7 +490,7 @@ function SectionServicesContent({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="UGC NETWORK"
-              video="/_media/card_videos/video_d.mp4"
+              video="https://youtu.be/OjeLwdytgOg"
               poster={cardThumb}
               description="Authentic community-led content that drives trust and conversions at scale through real faces and real stories."
               visible={visible}
@@ -493,7 +512,7 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
           <div className="grid grid-cols-2 gap-[8px] max-w-[1280px] w-full">
             <ServiceCard
               title="CREATOR PARTNERSHIPS"
-              video="/_media/card_videos/video_a.mp4"
+              video="https://youtu.be/sx_CI-jdO4Y"
               poster={cardThumb}
               description="Seamless integrations with top-tier creators that drive authentic brand affinity and measurable results."
               visible={visible}
@@ -502,7 +521,7 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="BRANDED CONTENT"
-              video="/_media/card_videos/video_b.mp4"
+              video="https://youtu.be/YKz85Fp1NHg"
               poster={cardThumb}
               description="High-fidelity original production that blends brand messaging with native creator-style storytelling."
               visible={visible}
@@ -511,7 +530,7 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="AMPLIFICATION & DISTRIBUTION"
-              video="/_media/card_videos/video_c.mp4"
+              video="https://youtu.be/cn4kRq2TMDI"
               poster={cardThumb}
               description="Exponentially scale your message through our proprietary distribution network and targeted amplification strategies."
               visible={visible}
@@ -520,7 +539,7 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
             />
             <ServiceCard
               title="FULL-FUNNEL SOLUTIONS"
-              video="/_media/card_videos/video_d.mp4"
+              video="https://youtu.be/OjeLwdytgOg"
               poster={cardThumb}
               description="Comprehensive cross-platform campaigns designed to drive everything from awareness to direct conversion."
               visible={visible}
@@ -675,7 +694,7 @@ function SectionServicesTalent({ visible }: { visible?: boolean }) {
             <ServiceCard
               title="Talent"
               subtitle="Management"
-              video="/_media/card_videos/video_a.mp4"
+              video="https://youtu.be/sx_CI-jdO4Y"
               poster={cardThumb}
               description="Full 360° business management for the internet's top creators, from content strategy to brand deals to long-term career architecture."
               visible={visible}
@@ -685,7 +704,7 @@ function SectionServicesTalent({ visible }: { visible?: boolean }) {
             <ServiceCard
               title="Content"
               subtitle="Studio"
-              video="/_media/card_videos/video_b.mp4"
+              video="https://youtu.be/YKz85Fp1NHg"
               description="End-to-end production capabilities—from ideation and scripting to filming, editing, and distribution across every platform."
               visible={visible}
               index={1}
@@ -694,7 +713,7 @@ function SectionServicesTalent({ visible }: { visible?: boolean }) {
             <ServiceCard
               title="Monetization"
               subtitle="Service"
-              video="/_media/card_videos/video_c.mp4"
+              video="https://youtu.be/cn4kRq2TMDI"
               description="Strategic revenue diversification through brand partnerships, licensing, merchandise, and digital product development."
               visible={visible}
               index={2}
