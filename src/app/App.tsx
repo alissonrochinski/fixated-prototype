@@ -580,12 +580,12 @@ function SectionPartnerBrands({ visible }: { visible?: boolean }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.6, delay: 0.1 + i * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
-                className="flex items-center justify-center w-full bg-[#0a0a0a] rounded-[8px] p-[24px]"
+                className="flex items-center justify-center w-full"
               >
                 <img
                   src={logo}
                   alt="Brand Logo"
-                  className="w-[120px] h-auto object-contain brightness-0 invert opacity-80"
+                  className="w-[120px] h-auto object-contain brightness-0 opacity-100"
                   onError={(e) => console.error("Logo failed to load:", logo)}
                 />
               </motion.div>
