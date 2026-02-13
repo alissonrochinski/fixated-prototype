@@ -1,6 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'motion/react';
 
+const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+};
+
 const TALENT_DATA = [
     {
         name: "Cono",
@@ -9,7 +15,7 @@ const TALENT_DATA = [
         platformIcon: "http://localhost:3845/assets/95da3e3cb1e8af92cd0e1007e8ef80e3d3e0a10d.svg",
         title: "Content Video Title Here",
         description: "Laboris eiusmod sunt aute nisi excepteur fugiat voluptate enim consequat labore ad veniam.",
-        video: "/_media/card_videos/video_a.mp4",
+        video: "https://youtu.be/sx_CI-jdO4Y",
         stats: [
             { value: "13M+", label: "Engaged Views" },
             { value: "21M+", label: "Metric Title Here" },
@@ -22,7 +28,7 @@ const TALENT_DATA = [
         platformIcon: "http://localhost:3845/assets/95da3e3cb1e8af92cd0e1007e8ef80e3d3e0a10d.svg",
         title: "Content Video Title Here",
         description: "Laboris eiusmod sunt aute nisi excepteur fugiat voluptate enim consequat labore ad veniam.",
-        video: "/_media/card_videos/video_b.mp4",
+        video: "https://youtu.be/YKz85Fp1NHg",
         stats: [
             { value: "13M+", label: "Engaged Views" },
             { value: "21M+", label: "Metric Title Here" },
@@ -35,7 +41,7 @@ const TALENT_DATA = [
         platformIcon: "http://localhost:3845/assets/95da3e3cb1e8af92cd0e1007e8ef80e3d3e0a10d.svg",
         title: "Content Video Title Here",
         description: "Laboris eiusmod sunt aute nisi excepteur fugiat voluptate enim consequat labore ad veniam.",
-        video: "/_media/card_videos/video_c.mp4",
+        video: "https://youtu.be/cn4kRq2TMDI",
         stats: [
             { value: "13M+", label: "Engaged Views" },
             { value: "21M+", label: "Metric Title Here" },
@@ -103,78 +109,102 @@ export default function SectionCuratedTalent({ visible }: { visible?: boolean })
                         className="flex gap-[24px] md:gap-[56px] overflow-x-auto snap-x snap-mandatory no-scrollbar w-full px-[calc(50%-min(500px,42.5vw))] pb-[20px] overflow-visible"
                         style={{ scrollBehavior: 'smooth' }}
                     >
-                        {TALENT_DATA.map((talent, index) => (
-                            <motion.div
-                                key={index}
-                                className="flex flex-col gap-[24px] md:gap-[40px] w-[min(1000px,85vw)] shrink-0 snap-center"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: false, margin: "-10%" }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                            >
-                                {/* Video Card - Flexible height based on VH */}
-                                <div className="relative w-full h-[240px] md:h-[min(498px,45vh)] rounded-[16px] overflow-hidden bg-[rgba(255,255,255,0.05)]">
-                                    <video
-                                        autoPlay
-                                        loop
-                                        muted
-                                        playsInline
-                                        className="absolute inset-0 w-full h-full object-cover opacity-100"
-                                    >
-                                        <source src={talent.video} />
-                                    </video>
-                                </div>
+                        {TALENT_DATA.map((talent, index) => {
+                            const isYoutube = talent.video.includes("youtube.com") || talent.video.includes("youtu.be");
+                            const youtubeId = isYoutube ? getYoutubeId(talent.video) : null;
 
-                                {/* Content Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-[0.5fr_1fr_1fr] gap-[24px] md:gap-[40px] w-full">
+                            return (
+                                <motion.div
+                                    key={index}
+                                    className="flex flex-col gap-[24px] md:gap-[40px] w-[min(1000px,85vw)] shrink-0 snap-center"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: false, margin: "-10%" }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                >
+                                    {/* Video Card - Flexible height based on VH */}
+                                    <div className="relative w-full h-[240px] md:h-[min(498px,45vh)] rounded-[16px] overflow-hidden bg-[rgba(255,255,255,0.05)]">
+                                        {isYoutube && youtubeId ? (
+                                            <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
+                                                <iframe
+                                                    width="100%"
+                                                    height="100%"
+                                                    src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeId}&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&fs=0`}
+                                                    title={talent.name}
+                                                    frameBorder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                    referrerPolicy="strict-origin-when-cross-origin"
+                                                    allowFullScreen
+                                                    className="w-full h-full object-cover pointer-events-none scale-[1.35]"
+                                                    style={{ pointerEvents: 'none' }}
+                                                ></iframe>
+                                                {/* Overlay to prevent interaction */}
+                                                <div className="absolute inset-0 z-10 bg-transparent"></div>
+                                            </div>
+                                        ) : (
+                                            <video
+                                                autoPlay
+                                                loop
+                                                muted
+                                                playsInline
+                                                className="absolute inset-0 w-full h-full object-cover opacity-100"
+                                            >
+                                                <source src={talent.video} />
+                                            </video>
+                                        )}
+                                    </div>
 
-                                    {/* Col 1: Profile */}
-                                    <div className="flex flex-col gap-[20px] items-start">
-                                        <div className="w-[56px] h-[56px] rounded-[16px] overflow-hidden bg-gray-800">
-                                            <img src={talent.avatar} alt={talent.name} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="flex flex-col gap-[8px]">
-                                            <p className="font-headline font-medium text-[14px] leading-[0.9] text-[#fcfaf5]">
-                                                {talent.name}
-                                            </p>
-                                            <div className="flex items-center gap-[8px]">
-                                                <div className="w-[22px] h-[16px]">
-                                                    <img src={talent.platformIcon} alt="Platform" className="w-full h-full block" />
+                                    {/* Content Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-[0.5fr_1fr_1fr] gap-[24px] md:gap-[40px] w-full">
+
+                                        {/* Col 1: Profile */}
+                                        <div className="flex flex-col gap-[20px] items-start">
+                                            <div className="w-[56px] h-[56px] rounded-[16px] overflow-hidden bg-gray-800">
+                                                <img src={talent.avatar} alt={talent.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex flex-col gap-[8px]">
+                                                <p className="font-headline font-medium text-[14px] leading-[0.9] text-[#fcfaf5]">
+                                                    {talent.name}
+                                                </p>
+                                                <div className="flex items-center gap-[8px]">
+                                                    <div className="w-[22px] h-[16px]">
+                                                        <img src={talent.platformIcon} alt="Platform" className="w-full h-full block" />
+                                                    </div>
+                                                    <p className="font-body font-normal text-[14px] leading-none text-[#fcfaf5] opacity-60">
+                                                        {talent.handle}
+                                                    </p>
                                                 </div>
-                                                <p className="font-body font-normal text-[14px] leading-none text-[#fcfaf5] opacity-60">
-                                                    {talent.handle}
-                                                </p>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Col 2: Info */}
-                                    <div className="flex flex-col gap-[16px] max-w-[320px]">
-                                        <h4 className="font-headline font-medium text-[24px] leading-none tracking-[-0.48px] text-[#fcfaf5]">
-                                            {talent.title}
-                                        </h4>
-                                        <p className="font-body font-medium leading-[1.5] text-[12px] text-[#fcfaf5] uppercase tracking-[0.12px]">
-                                            {talent.description}
-                                        </p>
-                                    </div>
+                                        {/* Col 2: Info */}
+                                        <div className="flex flex-col gap-[16px] max-w-[320px]">
+                                            <h4 className="font-headline font-medium text-[24px] leading-none tracking-[-0.48px] text-[#fcfaf5]">
+                                                {talent.title}
+                                            </h4>
+                                            <p className="font-body font-medium leading-[1.5] text-[12px] text-[#fcfaf5] uppercase tracking-[0.12px]">
+                                                {talent.description}
+                                            </p>
+                                        </div>
 
-                                    {/* Col 3: Stats */}
-                                    <div className="flex gap-[8px] w-full">
-                                        {talent.stats.map((stat, i) => (
-                                            <div key={i} className="flex-1 bg-[rgba(142,146,157,0.1)] rounded-[12px] p-[16px] flex flex-col gap-[8px]">
-                                                <p className="font-headline font-medium text-[24px] leading-[0.9] text-[#fcfaf5] uppercase">
-                                                    {stat.value}
-                                                </p>
-                                                <p className="font-body font-normal text-[14px] leading-[1.2] text-[#fcfaf5] opacity-60">
-                                                    {stat.label}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
+                                        {/* Col 3: Stats */}
+                                        <div className="flex gap-[8px] w-full">
+                                            {talent.stats.map((stat, i) => (
+                                                <div key={i} className="flex-1 bg-[rgba(142,146,157,0.1)] rounded-[12px] p-[16px] flex flex-col gap-[8px]">
+                                                    <p className="font-headline font-medium text-[24px] leading-[0.9] text-[#fcfaf5] uppercase">
+                                                        {stat.value}
+                                                    </p>
+                                                    <p className="font-body font-normal text-[14px] leading-[1.2] text-[#fcfaf5] opacity-60">
+                                                        {stat.label}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
 
-                                </div>
-                            </motion.div>
-                        ))}
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </div>
 

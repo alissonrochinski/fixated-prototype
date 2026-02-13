@@ -199,7 +199,7 @@ function HeroOverlay({ ready, leaving }: { ready?: boolean; leaving?: boolean })
   );
 }
 
-const SectionHero = memo(({ ready, leaving, heroVideo = '/_media/hero.mp4' }: { ready?: boolean; leaving?: boolean; heroVideo?: string }) => {
+const SectionHero = memo(({ ready, leaving, heroVideo = 'https://youtu.be/FweUZMuwzyE' }: { ready?: boolean; leaving?: boolean; heroVideo?: string }) => {
   const isYoutube = heroVideo.includes("youtube.com") || heroVideo.includes("youtu.be");
   const youtubeId = isYoutube ? getYoutubeId(heroVideo) : null;
 
