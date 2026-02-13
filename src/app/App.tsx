@@ -89,7 +89,7 @@ function NavButton({ light }: { light?: boolean }) {
   return (
     <div
       onClick={() => navigate('/contact')}
-      data-cursor-morph="true"
+      data-cursor-morph="transparent"
       className={`backdrop-blur-[16px] cursor-pointer flex gap-[8px] h-[40px] items-center justify-center p-[12px] rounded-[999px] shrink-0 transition-colors duration-500 ${light ? "bg-[rgba(255,255,255,0.15)]" : "bg-[rgba(0,0,0,0.05)]"}`}
     >
       <div className="flex items-center justify-center px-[4px]">
@@ -247,7 +247,7 @@ function GetInTouchButton() {
   return (
     <div
       onClick={() => navigate('/contact')}
-      data-cursor-morph="true"
+      data-cursor-morph="solid"
       className="bg-black cursor-pointer flex gap-[8px] h-[40px] items-center justify-center p-[12px] rounded-[999px] shrink-0"
     >
       <div className="flex items-center justify-center px-[4px]">
@@ -1014,7 +1014,7 @@ function CustomCursor() {
   const mouseY = useMotionValue(-100);
 
   // Smooth easing for the cursor movement
-  const springConfig = { damping: 35, stiffness: 200, mass: 0.8 };
+  const springConfig = { damping: 40, stiffness: 250, mass: 1 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
@@ -1023,7 +1023,7 @@ function CustomCursor() {
     width: 12,
     height: 12,
     borderRadius: '999px',
-    backgroundColor: 'rgba(255,255,255,1)',
+    type: 'none' as 'none' | 'solid' | 'transparent'
   });
 
   useEffect(() => {
@@ -1035,7 +1035,7 @@ function CustomCursor() {
     };
 
     const handleMouseOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('[data-cursor-morph="true"]') as HTMLElement;
+      const target = (e.target as HTMLElement).closest('[data-cursor-morph]') as HTMLElement;
 
       if (target) {
         const rect = target.getBoundingClientRect();
@@ -1044,12 +1044,13 @@ function CustomCursor() {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
 
+        const type = target.getAttribute('data-cursor-morph') as 'solid' | 'transparent';
         setHoverData({
           active: true,
           width: rect.width,
           height: rect.height,
           borderRadius: style.borderRadius,
-          backgroundColor: 'rgba(0,0,0,1)',
+          type
         });
 
         // Snap motion values to the center of the element
@@ -1059,9 +1060,9 @@ function CustomCursor() {
     };
 
     const handleMouseOut = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('[data-cursor-morph="true"]') as HTMLElement;
+      const target = (e.target as HTMLElement).closest('[data-cursor-morph]') as HTMLElement;
       if (target) {
-        setHoverData(prev => ({ ...prev, active: false, backgroundColor: 'rgba(255,255,255,1)' }));
+        setHoverData(prev => ({ ...prev, active: false, type: 'none' }));
       }
     };
 
@@ -1086,18 +1087,18 @@ function CustomCursor() {
         y: cursorY,
         translateX: '-50%',
         translateY: '-50%',
+        zIndex: hoverData.type === 'solid' ? 5 : 9999,
       }}
       animate={{
         width: hoverData.active ? hoverData.width : 12,
         height: hoverData.active ? hoverData.height : 12,
         borderRadius: hoverData.active ? hoverData.borderRadius : '999px',
-        backgroundColor: hoverData.active ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
       }}
       transition={{
-        duration: 0.5,
-        ease: [0.33, 1, 0.68, 1] // easeOutQuart for more organic transition
+        duration: 0.6,
+        ease: [0.33, 1, 0.68, 1]
       }}
-      className="pointer-events-none z-[9999] mix-blend-difference"
+      className="bg-white pointer-events-none mix-blend-difference"
     />
   );
 }
