@@ -1,6 +1,6 @@
 import svgPaths from "../imports/svg-7uktqo1iio";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router";
 import { motion } from "motion/react";
 import {
@@ -35,9 +35,9 @@ const TOUCH_THRESHOLD = 30;  // swipe mínimo em px para mobile
 const PARALLAX_FACTOR = 0.5; // vídeo se move a 50% da velocidade do scroll
 
 const HERO_IMG = "https://images.unsplash.com/photo-1662695089339-a2c24231a3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjb250ZW50JTIwY3JlYXRvcnMlMjBzZWxmaWV8ZW58MXx8fHwxNzcwODE5NDMyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const CARD1_IMG = "https://images.unsplash.com/photo-1760561993749-1b5034aa9a09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0YWxlbnQlMjBtYW5hZ2VtZW50JTIwY3JlYXRvcnxlbnwxfHx8fDE3NzA4MTk0MzJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const CARD1_IMG = "https://images.unsplash.com/photo-1760561993749-1b5034aa9a09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx0YWxlbnQlMjBtYW5hZ2VtZW50JTIwY3JlYXRvcnxlbnwxfHx8fDE3NzA4MTk0MzJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const SCISSORS_ICON = "https://www.figma.com/design/PTXbpayc6onVUhyZDN0iZG/Playground?node-id=448-9654&t=OtC6T9IxOgtUNPoY-4"; // This is a placeholder for the SVG integration Headeropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxjb250ZW50JTIwc3R1ZGlvJTIwcHJvZHVjdGlvbnxlbnwxfHx8fDE3NzA4MTk0MzN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-const CARD3_IMG = "https://images.unsplash.com/photo-1769798644300-e53957efab03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwbW9uZXRpemF0aW9uJTIwY3JlYXRvciUyMGVjb25vbXl8ZW58MXx8fHwxNzcwODE5NDM0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const CARD3_IMG = "https://images.unsplash.com/photo-1769798644300-e53957efab03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxkaWdpdGFsJTIwbW9uZXRpemF0aW9uJTIwY3JlYXRvciUyMGVjb25vbXl8ZW58MXx8fHwxNzcwODE5NDM0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
 /* 
    Original assets restored.
@@ -193,25 +193,54 @@ function HeroOverlay({ ready, leaving }: { ready?: boolean; leaving?: boolean })
   );
 }
 
-function SectionHero({ ready, leaving, heroVideo = '/_media/hero.mp4' }: { ready?: boolean; leaving?: boolean; heroVideo?: string }) {
+const SectionHero = memo(({ ready, leaving, heroVideo = '/_media/hero.mp4' }: { ready?: boolean; leaving?: boolean; heroVideo?: string }) => {
+  const isYoutube = heroVideo.includes("youtube.com") || heroVideo.includes("youtu.be");
+
+  const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const youtubeId = isYoutube ? getYoutubeId(heroVideo) : null;
+
   return (
-    <div data-snap-section className="flex flex-col h-screen items-center justify-end relative shrink-0 w-full overflow-hidden">
-      <video
-        data-parallax-hero
-        autoPlay
-        muted
-        className="absolute max-w-none object-cover size-full scale-[1.15] will-change-transform"
-        controlsList="nodownload"
-        loop
-        playsInline
-        poster={heroPoster}
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
+    <div data-snap-section className="flex flex-col h-screen items-center justify-end relative shrink-0 w-full overflow-hidden bg-black">
+      {isYoutube && youtubeId ? (
+        <div className="absolute inset-0 w-full h-full scale-[1.35] pointer-events-none select-none">
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeId}&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&fs=0`}
+            title="Hero Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            className="w-full h-full object-cover pointer-events-none"
+            style={{ pointerEvents: 'none' }}
+          ></iframe>
+          {/* Overlay to prevent interaction */}
+          <div className="absolute inset-0 z-10 bg-transparent"></div>
+        </div>
+      ) : (
+        <video
+          data-parallax-hero
+          autoPlay
+          muted
+          className="absolute max-w-none object-cover size-full scale-[1.15] will-change-transform"
+          controlsList="nodownload"
+          loop
+          playsInline
+          poster={heroPoster}
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+      )}
       <HeroOverlay ready={ready} leaving={leaving} />
     </div>
   );
-}
+});
 
 function GetInTouchButton() {
   return (
@@ -917,9 +946,9 @@ export function SectionFooter({ visible }: { visible?: boolean }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/content" element={<ContentPage key="content" mode="content" heroVideo="/_media/content.mp4" />} />
+      <Route path="/content" element={<ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" />} />
       <Route path="/talent" element={<ContentPage key="talent" mode="talent" heroVideo="/_media/hero.mp4" />} />
-      <Route path="/brands" element={<ContentPage key="brands" mode="brands" heroVideo="/_media/brand.mp4" />} />
+      <Route path="/brands" element={<ContentPage key="brands" mode="brands" heroVideo="https://youtu.be/FweUZMuwzyE" />} />
       <Route path="/contact" element={<PageShell><ContactPage /></PageShell>} />
       <Route path="*" element={<PageShell><HomePage /></PageShell>} />
     </Routes>
