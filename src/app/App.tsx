@@ -585,7 +585,7 @@ function SectionPartnerBrands({ visible }: { visible?: boolean }) {
                 <img
                   src={logo}
                   alt="Brand Logo"
-                  className="w-auto h-auto max-w-full max-h-[48px] object-contain brightness-0 invert opacity-80"
+                  className="w-[120px] h-auto object-contain brightness-0 invert opacity-80"
                 />
               </motion.div>
             ))}
