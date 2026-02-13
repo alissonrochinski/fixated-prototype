@@ -89,6 +89,7 @@ function NavButton({ light }: { light?: boolean }) {
   return (
     <div
       onClick={() => navigate('/contact')}
+      data-cursor-morph="true"
       className={`backdrop-blur-[16px] cursor-pointer flex gap-[8px] h-[40px] items-center justify-center p-[12px] rounded-[999px] shrink-0 transition-colors duration-500 ${light ? "bg-[rgba(255,255,255,0.15)]" : "bg-[rgba(0,0,0,0.05)]"}`}
     >
       <div className="flex items-center justify-center px-[4px]">
@@ -242,8 +243,13 @@ const SectionHero = memo(({ ready, leaving, heroVideo = 'https://youtu.be/FweUZM
 });
 
 function GetInTouchButton() {
+  const navigate = useNavigate();
   return (
-    <div className="bg-black cursor-pointer flex gap-[8px] h-[40px] items-center justify-center p-[12px] rounded-[999px] shrink-0">
+    <div
+      onClick={() => navigate('/contact')}
+      data-cursor-morph="true"
+      className="bg-black cursor-pointer flex gap-[8px] h-[40px] items-center justify-center p-[12px] rounded-[999px] shrink-0"
+    >
       <div className="flex items-center justify-center px-[4px]">
         <p className="font-headline font-medium leading-[0.9] text-[#fcfaf5] text-[14px] tracking-[0.28px] uppercase">
           Get in Touch
@@ -1007,8 +1013,8 @@ function CustomCursor() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Smooth easing for the cursor
-  const springConfig = { damping: 25, stiffness: 250, mass: 0.5 };
+  // Smooth easing for the cursor movement
+  const springConfig = { damping: 35, stiffness: 200, mass: 0.8 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
@@ -1017,8 +1023,7 @@ function CustomCursor() {
     width: 12,
     height: 12,
     borderRadius: '999px',
-    centerX: 0,
-    centerY: 0
+    backgroundColor: 'rgba(255,255,255,1)',
   });
 
   useEffect(() => {
@@ -1030,7 +1035,7 @@ function CustomCursor() {
     };
 
     const handleMouseOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('a, button, .cursor-pointer') as HTMLElement;
+      const target = (e.target as HTMLElement).closest('[data-cursor-morph="true"]') as HTMLElement;
 
       if (target) {
         const rect = target.getBoundingClientRect();
@@ -1044,20 +1049,19 @@ function CustomCursor() {
           width: rect.width,
           height: rect.height,
           borderRadius: style.borderRadius,
-          centerX,
-          centerY
+          backgroundColor: 'rgba(0,0,0,1)',
         });
 
-        // Snap motion values to the center of the element Header
+        // Snap motion values to the center of the element
         mouseX.set(centerX);
         mouseY.set(centerY);
       }
     };
 
     const handleMouseOut = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('a, button, .cursor-pointer') as HTMLElement;
+      const target = (e.target as HTMLElement).closest('[data-cursor-morph="true"]') as HTMLElement;
       if (target) {
-        setHoverData(prev => ({ ...prev, active: false }));
+        setHoverData(prev => ({ ...prev, active: false, backgroundColor: 'rgba(255,255,255,1)' }));
       }
     };
 
@@ -1082,19 +1086,18 @@ function CustomCursor() {
         y: cursorY,
         translateX: '-50%',
         translateY: '-50%',
+      }}
+      animate={{
         width: hoverData.active ? hoverData.width : 12,
         height: hoverData.active ? hoverData.height : 12,
         borderRadius: hoverData.active ? hoverData.borderRadius : '999px',
+        backgroundColor: hoverData.active ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
       }}
-      className="bg-white pointer-events-none z-[9999] mix-blend-difference"
       transition={{
-        type: 'spring',
-        damping: 30,
-        stiffness: 250,
-        width: { duration: 0.3 },
-        height: { duration: 0.3 },
-        borderRadius: { duration: 0.3 }
+        duration: 0.5,
+        ease: [0.33, 1, 0.68, 1] // easeOutQuart for more organic transition
       }}
+      className="pointer-events-none z-[9999] mix-blend-difference"
     />
   );
 }
