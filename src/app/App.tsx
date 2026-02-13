@@ -1008,50 +1008,69 @@ function CustomCursor() {
   const mouseY = useMotionValue(-100);
 
   // Smooth easing for the cursor
-  const springConfig = { damping: 20, stiffness: 250, mass: 0.5 };
+  const springConfig = { damping: 25, stiffness: 250, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
-  const [isHovering, setIsHovering] = useState(false);
+  const [hoverData, setHoverData] = useState({
+    active: false,
+    width: 12,
+    height: 12,
+    borderRadius: '999px',
+    centerX: 0,
+    centerY: 0
+  });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      if (!hoverData.active) {
+        mouseX.set(e.clientX);
+        mouseY.set(e.clientY);
+      }
     };
 
     const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const isInteractive =
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        window.getComputedStyle(target).cursor === 'pointer';
+      const target = (e.target as HTMLElement).closest('a, button, .cursor-pointer') as HTMLElement;
 
-      if (isInteractive) {
-        setIsHovering(true);
+      if (target) {
+        const rect = target.getBoundingClientRect();
+        const style = window.getComputedStyle(target);
+
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        setHoverData({
+          active: true,
+          width: rect.width,
+          height: rect.height,
+          borderRadius: style.borderRadius,
+          centerX,
+          centerY
+        });
+
+        // Snap motion values to the center of the element Header
+        mouseX.set(centerX);
+        mouseY.set(centerY);
       }
     };
 
     const handleMouseOut = (e: MouseEvent) => {
-      setIsHovering(false);
+      const target = (e.target as HTMLElement).closest('a, button, .cursor-pointer') as HTMLElement;
+      if (target) {
+        setHoverData(prev => ({ ...prev, active: false }));
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseover', handleMouseOver);
     window.addEventListener('mouseout', handleMouseOut);
 
-    // Hide default cursor globally
-    document.body.style.cursor = 'none';
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
       window.removeEventListener('mouseout', handleMouseOut);
-      document.body.style.cursor = 'auto';
     };
-  }, []);
+  }, [hoverData.active]);
 
   return (
     <motion.div
@@ -1063,13 +1082,19 @@ function CustomCursor() {
         y: cursorY,
         translateX: '-50%',
         translateY: '-50%',
+        width: hoverData.active ? hoverData.width : 12,
+        height: hoverData.active ? hoverData.height : 12,
+        borderRadius: hoverData.active ? hoverData.borderRadius : '999px',
       }}
-      animate={{
-        scale: isHovering ? 0 : 1,
-        opacity: isHovering ? 0 : 1,
+      className="bg-white pointer-events-none z-[9999] mix-blend-difference"
+      transition={{
+        type: 'spring',
+        damping: 30,
+        stiffness: 250,
+        width: { duration: 0.3 },
+        height: { duration: 0.3 },
+        borderRadius: { duration: 0.3 }
       }}
-      transition={{ duration: 0.2 }}
-      className="w-[12px] h-[12px] bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
     />
   );
 }
