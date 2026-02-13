@@ -1468,6 +1468,18 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
             <SectionCases visible={activeSection === 4 || leavingSection === 4} />
             <SectionFooter visible={activeSection === 5 || leavingSection === 5} />
           </>
+        ) : mode === 'home' ? (
+          <>
+            <SectionHeading
+              visible={activeSection === 1 || leavingSection === 1}
+              title1="THE OPERATING"
+              title2="SYSTEM FOR CREATORS"
+              description="WE BUILD CREATOR BUSINESSES, PRODUCE CONTENT, AND GUARANTEE DISTRIBUTION AT SCALE."
+            />
+            <SectionServicesTalent visible={activeSection === 2 || leavingSection === 2} />
+            <SectionFeaturedTalent visible={activeSection === 3 || leavingSection === 3} />
+            <SectionFooter visible={activeSection === 4 || leavingSection === 4} />
+          </>
         ) : (
           <>
             <SectionHeading
