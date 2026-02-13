@@ -206,7 +206,7 @@ const SectionHero = memo(({ ready, leaving, heroVideo = 'https://youtu.be/FweUZM
   return (
     <div data-snap-section className="flex flex-col h-screen items-center justify-end relative shrink-0 w-full overflow-hidden bg-black">
       {isYoutube && youtubeId ? (
-        <div className="absolute inset-0 w-full h-full scale-[1.35] pointer-events-none select-none">
+        <div data-parallax-hero className="absolute inset-0 w-full h-full scale-[1.35] pointer-events-none select-none will-change-transform">
           <iframe
             width="100%"
             height="100%"
@@ -1093,7 +1093,8 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
     // Atualiza parallax do vídeo hero com base no offset do container
     function updateParallax(offset: number) {
       if (!heroVideo) return;
-      heroVideo.style.transform = `scale(1.15) translateY(${offset * PARALLAX_FACTOR}px)`;
+      const baseScale = heroVideo.tagName === 'DIV' ? 1.35 : 1.15;
+      heroVideo.style.transform = `scale(${baseScale}) translateY(${offset * PARALLAX_FACTOR}px)`;
     }
 
     // Reset invasion transforms
