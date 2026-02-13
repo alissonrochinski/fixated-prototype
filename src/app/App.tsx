@@ -13,7 +13,7 @@ import {
 import SectionCuratedTalent from "./components/SectionCuratedTalent";
 import Particles from "./components/Particles";
 import ScrollReveal from "./components/ScrollReveal";
-import HomePage from "./pages/HomePage";
+
 import ContactPage from "./pages/ContactPage";
 
 // Talent Roster Images
@@ -977,21 +977,16 @@ function PersistentViews({ defaultHome }: { defaultHome?: boolean }) {
   const location = useLocation();
   const path = location.pathname;
 
-  // Determine active mode based on path
-  // If defaultHome is true (path="*"), we redirect logic or show Home?
-  // Actually, the original App had path="*" -> HomePage.
-  // But if we want to cache videos, maybe we should treat "/" as home.
-
-  if (defaultHome || path === "/" || (!path.includes("content") && !path.includes("talent") && !path.includes("brands"))) {
-    return <PageShell><HomePage /></PageShell>;
-  }
-
   const isContent = path === "/content";
   const isTalent = path === "/talent";
   const isBrands = path === "/brands";
+  const isHome = defaultHome || path === "/" || (!isContent && !isTalent && !isBrands);
 
   return (
     <>
+      <div style={{ display: isHome ? 'block' : 'none' }}>
+        <ContentPage key="home" mode="home" heroVideo="https://youtu.be/RSqxXbTFkaI" isActive={isHome} />
+      </div>
       <div style={{ display: isContent ? 'block' : 'none' }}>
         <ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" isActive={isContent} />
       </div>
@@ -1020,7 +1015,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActive = true }: { mode?: 'content' | 'talent' | 'brands'; heroVideo?: string; isActive?: boolean }) {
+function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActive = true }: { mode?: 'content' | 'talent' | 'brands' | 'home'; heroVideo?: string; isActive?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [navLight, setNavLight] = useState(true);
   const [ready, setReady] = useState(false);
