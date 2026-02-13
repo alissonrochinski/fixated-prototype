@@ -32,7 +32,7 @@ import cardThumb from "../assets/b4cdd0e70ebde04b9101587fb11ab4298f40d8de.png";
 const DURATION = 900;        // duração da transição (ms)
 const WHEEL_THRESHOLD = 40;   // delta mínimo para disparar (filtra ruído do trackpad)
 const TOUCH_THRESHOLD = 30;  // swipe mínimo em px para mobile
-const PARALLAX_FACTOR = 0.5; // vídeo se move a 50% da velocidade do scroll
+const PARALLAX_FACTOR = 0.425; // vídeo se move a 42.5% da velocidade do scroll (reduced by 15%)
 
 const getYoutubeId = (url: string) => {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
