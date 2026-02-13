@@ -2,7 +2,7 @@ import svgPaths from "../imports/svg-7uktqo1iio";
 
 import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router";
-import { motion } from "motion/react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 import {
   ViralMachineHero,
   ViralMachineStage,
@@ -963,13 +963,16 @@ export function SectionFooter({ visible }: { visible?: boolean }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/content" element={<PersistentViews />} />
-      <Route path="/talent" element={<PersistentViews />} />
-      <Route path="/brands" element={<PersistentViews />} />
-      <Route path="/contact" element={<PageShell><ContactPage /></PageShell>} />
-      <Route path="*" element={<PersistentViews defaultHome />} />
-    </Routes>
+    <>
+      <CustomCursor />
+      <Routes>
+        <Route path="/content" element={<PersistentViews />} />
+        <Route path="/talent" element={<PersistentViews />} />
+        <Route path="/brands" element={<PersistentViews />} />
+        <Route path="/contact" element={<PageShell><ContactPage /></PageShell>} />
+        <Route path="*" element={<PersistentViews defaultHome />} />
+      </Routes>
+    </>
   );
 }
 
@@ -997,6 +1000,77 @@ function PersistentViews({ defaultHome }: { defaultHome?: boolean }) {
         <ContentPage key="brands" mode="brands" heroVideo="https://youtu.be/FweUZMuwzyE" isActive={isBrands} />
       </div>
     </>
+  );
+}
+
+function CustomCursor() {
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Smooth easing for the cursor
+  const springConfig = { damping: 20, stiffness: 250, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isInteractive =
+        target.tagName === 'A' ||
+        target.tagName === 'BUTTON' ||
+        target.closest('a') ||
+        target.closest('button') ||
+        window.getComputedStyle(target).cursor === 'pointer';
+
+      if (isInteractive) {
+        setIsHovering(true);
+      }
+    };
+
+    const handleMouseOut = (e: MouseEvent) => {
+      setIsHovering(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mouseout', handleMouseOut);
+
+    // Hide default cursor globally
+    document.body.style.cursor = 'none';
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mouseout', handleMouseOut);
+      document.body.style.cursor = 'auto';
+    };
+  }, []);
+
+  return (
+    <motion.div
+      style={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        x: cursorX,
+        y: cursorY,
+        translateX: '-50%',
+        translateY: '-50%',
+      }}
+      animate={{
+        scale: isHovering ? 0 : 1,
+        opacity: isHovering ? 0 : 1,
+      }}
+      transition={{ duration: 0.2 }}
+      className="w-[12px] h-[12px] bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+    />
   );
 }
 
