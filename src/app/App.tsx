@@ -985,7 +985,7 @@ function PersistentViews({ defaultHome }: { defaultHome?: boolean }) {
   return (
     <>
       <div style={{ display: isHome ? 'block' : 'none' }}>
-        <ContentPage key="home" mode="home" heroVideo="https://youtu.be/RSqxXbTFkaI" isActive={isHome} />
+        <ContentPage key="home" mode="home" heroVideo="https://youtu.be/-Py816eI-0g" isActive={isHome} />
       </div>
       <div style={{ display: isContent ? 'block' : 'none' }}>
         <ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" isActive={isContent} />
