@@ -947,7 +947,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/content" element={<ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" />} />
-      <Route path="/talent" element={<ContentPage key="talent" mode="talent" heroVideo="/_media/hero.mp4" />} />
+      <Route path="/talent" element={<ContentPage key="talent" mode="talent" heroVideo="https://youtu.be/RSqxXbTFkaI" />} />
       <Route path="/brands" element={<ContentPage key="brands" mode="brands" heroVideo="https://youtu.be/FweUZMuwzyE" />} />
       <Route path="/contact" element={<PageShell><ContactPage /></PageShell>} />
       <Route path="*" element={<PageShell><HomePage /></PageShell>} />
