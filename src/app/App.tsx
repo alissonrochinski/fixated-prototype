@@ -965,12 +965,44 @@ export function SectionFooter({ visible }: { visible?: boolean }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/content" element={<ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" />} />
-      <Route path="/talent" element={<ContentPage key="talent" mode="talent" heroVideo="https://youtu.be/RSqxXbTFkaI" />} />
-      <Route path="/brands" element={<ContentPage key="brands" mode="brands" heroVideo="https://youtu.be/FweUZMuwzyE" />} />
+      <Route path="/content" element={<PersistentViews />} />
+      <Route path="/talent" element={<PersistentViews />} />
+      <Route path="/brands" element={<PersistentViews />} />
       <Route path="/contact" element={<PageShell><ContactPage /></PageShell>} />
-      <Route path="*" element={<PageShell><HomePage /></PageShell>} />
+      <Route path="*" element={<PersistentViews defaultHome />} />
     </Routes>
+  );
+}
+
+function PersistentViews({ defaultHome }: { defaultHome?: boolean }) {
+  const location = useLocation();
+  const path = location.pathname;
+
+  // Determine active mode based on path
+  // If defaultHome is true (path="*"), we redirect logic or show Home?
+  // Actually, the original App had path="*" -> HomePage.
+  // But if we want to cache videos, maybe we should treat "/" as home.
+
+  if (defaultHome || path === "/" || (!path.includes("content") && !path.includes("talent") && !path.includes("brands"))) {
+    return <PageShell><HomePage /></PageShell>;
+  }
+
+  const isContent = path === "/content";
+  const isTalent = path === "/talent";
+  const isBrands = path === "/brands";
+
+  return (
+    <>
+      <div style={{ display: isContent ? 'block' : 'none' }}>
+        <ContentPage key="content" mode="content" heroVideo="https://youtu.be/FXjDyHNL9IM" isActive={isContent} />
+      </div>
+      <div style={{ display: isTalent ? 'block' : 'none' }}>
+        <ContentPage key="talent" mode="talent" heroVideo="https://youtu.be/RSqxXbTFkaI" isActive={isTalent} />
+      </div>
+      <div style={{ display: isBrands ? 'block' : 'none' }}>
+        <ContentPage key="brands" mode="brands" heroVideo="https://youtu.be/FweUZMuwzyE" isActive={isBrands} />
+      </div>
+    </>
   );
 }
 
@@ -989,13 +1021,19 @@ function PageShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4' }: { mode?: 'content' | 'talent' | 'brands'; heroVideo?: string }) {
+function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActive = true }: { mode?: 'content' | 'talent' | 'brands'; heroVideo?: string; isActive?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [navLight, setNavLight] = useState(true);
   const [ready, setReady] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
   const [leavingSection, setLeavingSection] = useState<number | null>(null);
   const goToRef = useRef<(index: number) => void>(() => { });
+
+  // Track active state in ref for event listeners
+  const activeRef = useRef(isActive);
+  useEffect(() => {
+    activeRef.current = isActive;
+  }, [isActive]);
 
   // Dispara as animações de entrada após o primeiro render
   useEffect(() => {
@@ -1270,6 +1308,7 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4' }: { mod
 
     // ── Wheel with Strict Single-Section Lock ──
     function onWheel(e: WheelEvent) {
+      if (!activeRef.current) return;
       e.preventDefault();
 
       // STRICT LOCK: If animating, ignore ALL input.
@@ -1288,9 +1327,11 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4' }: { mod
     // ── Touch ──
     let touchStartY = 0;
     function onTouchStart(e: TouchEvent) {
+      if (!activeRef.current) return;
       touchStartY = e.touches[0].clientY;
     }
     function onTouchEnd(e: TouchEvent) {
+      if (!activeRef.current) return;
       const diff = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(diff) < TOUCH_THRESHOLD) return;
       goTo(diff > 0 ? targetIndex + 1 : targetIndex - 1);
@@ -1298,6 +1339,7 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4' }: { mod
 
     // ── Keyboard ──
     function onKeyDown(e: KeyboardEvent) {
+      if (!activeRef.current) return;
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
         goTo(targetIndex + 1);
