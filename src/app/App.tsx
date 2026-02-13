@@ -555,18 +555,18 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
 
 function SectionPartnerBrands({ visible }: { visible?: boolean }) {
   const logos = [
-    "http://localhost:3845/assets/b206d8f8bc4652619db6677241842702135cd757.svg", // Red Bull
-    "http://localhost:3845/assets/7a848290faf4b3224b79ef3eda2ccc00e61bc5ec.svg", // Roblox
-    "http://localhost:3845/assets/ad64b9fa48385bfc616124ed62ba650f6a8660d7.svg", // Samsung
-    "http://localhost:3845/assets/b4cc43879cb892186efa1e6bb4cddbfdfe818910.svg", // Disney Now
-    "http://localhost:3845/assets/464fcd84550a4e81e963b05ecc8a57c3e7d931b4.svg", // YouTube
-    "http://localhost:3845/assets/47bd7f59b96006b5234efc6e2317a3859698dc22.svg", // Verizon
-    "http://localhost:3845/assets/ecb7d929170de686aa3193b4c9a035ab94c5baf1.svg", // High Colorado
-    "http://localhost:3845/assets/f2ee13b4dbdf034ca1675e4fb2d9db8296963b0a.svg", // Porsche
-    "http://localhost:3845/assets/5c6794294ccf688e631008734cf21bf80440e1f7.svg", // Star Wars
-    "http://localhost:3845/assets/bc90e0ec293568868cbd1501b0796dff2a72ace9.svg", // Amazon
-    "http://localhost:3845/assets/19ba5d8959eb7b1e7d3b8dfba00fdfbe677100b9.svg", // AMG
-    "http://localhost:3845/assets/c5a3443a419c5d7e405549460a7959f78c1a0c60.svg", // Coca Cola
+    "/_logos/Red Bull.svg",
+    "/_logos/Roblox.svg",
+    "/_logos/Samsung.svg",
+    "/_logos/Disney Now.svg",
+    "/_logos/YouTube.svg",
+    "/_logos/Verizon.svg",
+    "/_logos/High Colorado.svg",
+    "/_logos/Porsche.svg",
+    "/_logos/Star Wars.svg",
+    "/_logos/Amazon.svg",
+    "/_logos/AMG.svg",
+    "/_logos/Coca Cola.svg",
   ];
 
   return (
