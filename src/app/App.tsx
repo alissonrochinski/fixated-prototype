@@ -555,40 +555,38 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
 
 function SectionPartnerBrands({ visible }: { visible?: boolean }) {
   const logos = [
-    "http://localhost:3845/assets/eb5d632dffa2b7e9aa3c2b9febc6f3e775aa6a2f.svg",
-    "http://localhost:3845/assets/68aeff37fda902d292d4eb728ed9c8cdc989c919.svg",
-    "http://localhost:3845/assets/c5af7d1bb4615606fad6ed49def71db34e1a9cb7.svg",
-    "http://localhost:3845/assets/0cad025e85bca61df92123b48d0c99764402e85d.svg",
-    "http://localhost:3845/assets/005a654cd0affef449d0216194847d0fdadadb4a.svg",
-    "http://localhost:3845/assets/21da8cfccd43c3c718d8a3896a58a8e1e0bd198e.svg",
-    "http://localhost:3845/assets/205e732c3fdf9c436f972c2a60c6dbcd46ce26b0.svg",
-    "http://localhost:3845/assets/bafaf1036148c64443a5190c8f8f1795a97047ac.svg",
-    "http://localhost:3845/assets/cbe969108ee2e0806144a9ac1a96059aec00cd9e.svg",
-    "http://localhost:3845/assets/092f61c70b8b435c7bac62c4996a80df437052bc.svg",
-    "http://localhost:3845/assets/eddfb5b3c4cbb766d6d92d466b4951ff753034e4.svg",
-    "http://localhost:3845/assets/437c1ba3c38c1ec91bc63dca789f8a0d27621213.svg",
+    "http://localhost:3845/assets/1a35c5b9a641cef94de0f5922837e4f396d2a9bb.svg", // Red Bull
+    "http://localhost:3845/assets/4c8f699eb839967746843282f157f216d9c3cee4.svg", // Roblox
+    "http://localhost:3845/assets/48dccd903a0d4eb3ae02b3245e7abab376bfb2d2.svg", // Samsung
+    "http://localhost:3845/assets/7a5526aacce66f27a55d2a470655ff79bc9ad776.svg", // Disney
+    "http://localhost:3845/assets/d54bb43515260748ac6c09517c0c485bc132c5c0.svg", // YouTube
+    "http://localhost:3845/assets/9d089441b46131930ed1f2b75d348f85417ba036.svg", // Verizon
+    "http://localhost:3845/assets/019db52ed8f4c439ad692f9977a364475dc20ac4.svg", // High Colorado
+    "http://localhost:3845/assets/e3a86fd6a4c85d3f38d95c8cc005775a30134a25.svg", // Porsche
+    "http://localhost:3845/assets/a889ef5101a8a6ebb503aadc69d2000034de5f6b.svg", // Star Wars
+    "http://localhost:3845/assets/7e1039ceefb3327ecfd8c11dbb63667bf6fac9e8.svg", // Amazon
+    "http://localhost:3845/assets/1a5aad7e06a8b3e744908786b6b0b874fe659cc0.svg", // AMG
+    "http://localhost:3845/assets/57bb75066dbca806764ead529b44e2e7d582db18.svg", // Coca Cola
   ];
 
   return (
     <div data-snap-section className="relative shrink-0 w-full h-screen">
       <div className="flex flex-col items-center justify-center size-full">
-        <div className="max-w-[1100px] w-full px-[24px]">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-[60px] gap-y-[64px] items-center justify-items-center">
+        <div className="max-w-[1000px] w-full px-[24px]">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-[8px] items-center justify-items-center w-full">
             {logos.map((logo, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.6, delay: 0.1 + i * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
-                className="flex items-center justify-center w-full"
+                className="flex items-center justify-center w-full aspect-video bg-[#0a0a0a] rounded-[8px] p-[16px]"
               >
-                <div className="h-[80px] flex items-center justify-center w-full">
-                  <img
-                    src={logo}
-                    alt="Brand Logo"
-                    className="w-auto h-auto max-w-[160px] max-h-[60px] object-contain transition-transform duration-500 hover:scale-110 brightness-0"
-                  />
-                </div>
+                <img
+                  src={logo}
+                  alt="Brand Logo"
+                  className="w-full h-full object-contain brightness-0 invert opacity-80"
+                />
               </motion.div>
             ))}
           </div>
