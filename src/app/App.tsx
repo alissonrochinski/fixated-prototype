@@ -555,18 +555,18 @@ function SectionServicesBrands({ visible }: { visible?: boolean }) {
 
 function SectionPartnerBrands({ visible }: { visible?: boolean }) {
   const logos = [
-    "/_logos/Red Bull.svg",
+    "/_logos/Red%20Bull.svg",
     "/_logos/Roblox.svg",
     "/_logos/Samsung.svg",
-    "/_logos/Disney Now.svg",
+    "/_logos/Disney%20Now.svg",
     "/_logos/YouTube.svg",
     "/_logos/Verizon.svg",
-    "/_logos/High Colorado.svg",
+    "/_logos/High%20Colorado.svg",
     "/_logos/Porsche.svg",
-    "/_logos/Star Wars.svg",
+    "/_logos/Star%20Wars.svg",
     "/_logos/Amazon.svg",
     "/_logos/AMG.svg",
-    "/_logos/Coca Cola.svg",
+    "/_logos/Coca%20Cola.svg",
   ];
 
   return (
@@ -586,6 +586,7 @@ function SectionPartnerBrands({ visible }: { visible?: boolean }) {
                   src={logo}
                   alt="Brand Logo"
                   className="w-[120px] h-auto object-contain brightness-0 invert opacity-80"
+                  onError={(e) => console.error("Logo failed to load:", logo)}
                 />
               </motion.div>
             ))}
