@@ -1029,6 +1029,15 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
     activeRef.current = isActive;
   }, [isActive]);
 
+  // Reset scroll to top when tab becomes active
+  useEffect(() => {
+    if (isActive) {
+      containerRef.current?.dispatchEvent(
+        new CustomEvent("navigate-to", { detail: { index: 0, instant: true } })
+      );
+    }
+  }, [isActive]);
+
   // Dispara as animações de entrada após o primeiro render
   useEffect(() => {
     const id = requestAnimationFrame(() => setReady(true));
@@ -1119,8 +1128,23 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
       return match ? parseFloat(match[1]) : null;
     }
 
-    function goTo(index: number) {
-      if (index < 0 || index >= sectionCount || index === targetIndex) return;
+    function goTo(index: number, instant: boolean = false) {
+      if (index < 0 || index >= sectionCount) return;
+      if (!instant && index === targetIndex) return;
+
+      const vh = window.innerHeight;
+
+      if (instant) {
+        cancelAnimationFrame(animFrameId);
+        currentIndex = index;
+        targetIndex = index;
+        setNavLight(darkSections.has(index));
+        setActiveSection(index);
+        container!.style.transform = `translateY(${-index * vh}px)`;
+        updateParallax(index * vh);
+        isAnimating = false;
+        return;
+      }
 
       // Atualiza esquema da nav ao iniciar a transição
       setNavLight(darkSections.has(index));
@@ -1149,8 +1173,6 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
       const fromIndex = targetIndex;
       targetIndex = index;
       isAnimating = true;
-
-      const vh = window.innerHeight;
 
       // ── Invasion transition (2→3 or 3→2) ──
       const isInvasionForward = fromIndex === INVASION_FROM && index === INVASION_TO;
@@ -1359,8 +1381,12 @@ function ContentPage({ mode = 'content', heroVideo = '/_media/hero.mp4', isActiv
 
     // ── Navigate-to (from nav links) ──
     function onNavigateTo(e: Event) {
-      const idx = (e as CustomEvent).detail;
-      if (typeof idx === "number") goTo(idx);
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "number") {
+        goTo(detail);
+      } else if (detail && typeof detail === "object") {
+        goTo(detail.index, detail.instant);
+      }
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
